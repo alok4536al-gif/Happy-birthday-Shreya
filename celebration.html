@@ -1,137 +1,364 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Celebration</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-body{
-  margin:0;
-  padding:0;
-  background:#000;
-  color:#fff;
-  text-align:center;
-  font-family:'Segoe UI',sans-serif;
-  overflow-x:hidden;
-}
-h1{
-  margin-top:40px;
-  font-size:3rem;
-  text-shadow:0 0 10px #ff69b4;
-}
-button{
-  margin-top:40px;
-  padding:15px 30px;
-  font-size:1.2rem;
-  border:none;
-  border-radius:8px;
-  background:#ff69b4;
-  color:#fff;
-  cursor:pointer;
-  transition:transform 0.2s;
-}
-button:hover{ transform:scale(1.05); }
+  :root{
+    --accent: #ff4fa3;
+    --gold: #ffb199;
+    --bg: #000;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:#fff;font-family:"Poppins",system-ui,Arial;overflow-x:hidden}
 
-#giftPopup{
-  display:none;
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 0 20px #ff69b4;
-  text-align:center;
-  z-index:2000;
-  max-width:90vw;
-}
-#giftIcon{
-  width:100px;
-  cursor:pointer;
-  filter:drop-shadow(0 0 6px #ff69b4);
-  transition:transform 0.3s;
-}
-#giftIcon:hover{ transform:scale(1.1); }
-#giftPhoto{
-  display:none;
-  width:50vw;       /* half of viewport width */
-  max-width:500px;  /* safety limit */
-  border-radius:12px;
-  margin-top:20px;
-}
-#giftMsg2{ display:none; margin-top:15px; font-size:1.2rem; }
+  /* ========== COUNTDOWN (fullscreen) ========== */
+  #countdownWrap{
+    position:fixed;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    background:#000;z-index:50;
+    transition:opacity .6s ease;
+  }
+  #countdown{
+    font-weight:900;
+    color:var(--accent);
+    text-shadow:0 0 30px rgba(255,79,163,.35), 0 0 80px rgba(255,79,163,.15);
+    font-size:clamp(48px,18vw,180px);
+    line-height:1;
+    letter-spacing:2px;
+    user-select:none;
+  }
 
-canvas#confetti-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  pointer-events:none;
-  z-index:1000;
-}
+  /* ========== MAIN CONTENT (hidden during countdown) ========== */
+  .main{
+    min-height:100vh;
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  h1{
+    margin-top:12px;
+    font-size:clamp(22px,4vw,36px);
+    color:var(--accent);
+    text-shadow:0 0 20px rgba(255,79,163,.12);
+  }
+
+  /* cake section */
+  #cakeSection{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+    margin-top:8vh;
+  }
+  #cakeImg{
+    width:360px;
+    max-width:88vw;
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(255,79,163,0.12);
+    transform-origin:center;
+    opacity:0; transition:opacity .8s ease, transform .8s ease;
+  }
+  .actionRow{
+    display:flex;gap:14px;align-items:center;margin-top:6px;
+  }
+  .btn{
+    background:linear-gradient(135deg,var(--accent),var(--gold));
+    color:#000;padding:12px 22px;border-radius:999px;border:none;font-weight:700;
+    cursor:pointer;box-shadow:0 10px 30px rgba(255,79,163,.18);font-size:16px;
+  }
+  .btn.secondary{
+    background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;
+    box-shadow:none;
+  }
+
+  /* confetti canvas */
+  canvas#confetti-canvas{position:fixed;inset:0;z-index:1200;pointer-events:none;display:block}
+
+  /* gift popup (icon stage) */
+  #giftPopup{
+    display:none;position:fixed;z-index:1500;left:50%;top:50%;transform:translate(-50%,-50%);
+    background:linear-gradient(180deg,#0f0f0f,#141414);padding:18px;border-radius:14px;
+    min-width:260px;max-width:92vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.7);
+  }
+  #giftPopup h3{color:var(--gold);margin-bottom:10px}
+  #giftIcon{width:110px;height:110px;cursor:pointer;border-radius:12px;object-fit:contain}
+  #giftHint{color:#ddd;font-size:15px;margin-top:10px}
+
+  /* large photo modal inside gift popup */
+  #giftModal{
+    display:none;margin-top:12px;position:relative;
+  }
+  #giftModal .closeBtn{
+    position:absolute;right:8px;top:8px;background:rgba(0,0,0,0.6);border:none;color:#fff;
+    width:36px;height:36px;border-radius:8px;cursor:pointer;font-weight:700;font-size:18px;
+  }
+  #giftModal img{
+    width:75vw;max-width:960px;max-height:80vh;border-radius:12px;display:block;margin:0 auto;
+    box-shadow:0 30px 80px rgba(0,0,0,0.7);
+  }
+  #giftModal p{color:#ffd9ed;margin-top:12px;font-size:1.05rem}
+
+  /* audio hint if autoplay blocked */
+  #audioHint{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:1600;
+    background:#111;padding:10px 16px;border-radius:999px;color:#fff;border:1px solid rgba(255,79,163,0.12);
+    display:none;cursor:pointer;
+  }
+
+  /* memories link at bottom */
+  .memoriesWrap{margin-top:32px}
+  a.memBtn{
+    text-decoration:none;padding:12px 20px;border-radius:999px;background:rgba(255,255,255,0.06);
+    color:#fff;border:1px solid rgba(255,255,255,0.05);font-weight:700;
+  }
+
+  @media(max-width:600px){
+    #cakeImg{width:85vw}
+    .lineSmall{font-size:14px}
+  }
 </style>
 </head>
 <body>
 
-<h1>🎉 Happy Birthday Shreya 🎉</h1>
+  <!-- COUNTDOWN fullscreen -->
+  <div id="countdownWrap">
+    <div id="countdown">15</div>
+  </div>
 
-<button id="cutCakeBtn">🎂 Cut the Cake 🎂</button>
+  <!-- MAIN (hidden initially until countdown completes) -->
+  <div class="main" aria-hidden="true">
 
-<canvas id="confetti-canvas"></canvas>
+    <h1>🎉 Happy Birthday Shreya 🎉</h1>
 
-<div id="giftPopup">
-  <h2>Here's a small gift for you from Alok 💝</h2>
-  <img id="giftIcon" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Gift Icon">
-  <img id="giftPhoto" src="photo13.jpg" alt="Gift Photo">
-  <p id="giftMsg2">Here's some flowers for my cutie from another cutie 🥰</p>
-</div>
+    <!-- Cake area (shows after countdown) -->
+    <div id="cakeSection" role="region" aria-label="Cake section">
+      <img id="cakeImg" src="cake.png.png" alt="Birthday Cake">
+      <div class="actionRow">
+        <button id="cutBtn" class="btn">🎂 Cut The Cake</button>
+        <button id="playPauseBtn" class="btn secondary" title="Pause / Play music">Pause</button>
+      </div>
 
-<audio id="bgAudio" src="audio.mp3" autoplay loop></audio>
+      <div class="memoriesWrap">
+        <!-- When clicked opens the cinematic animation page (train/wormhole) -->
+        <a href="train.html" class="memBtn">Go to Memories</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Gift popup (icon stage) -->
+  <div id="giftPopup" role="dialog" aria-modal="true">
+    <h3>Here's a small gift for you from Alok 💝</h3>
+    <img id="giftIcon" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="gift icon">
+    <div id="giftHint">Tap the gift to open it</div>
+
+    <!-- large image modal area (hidden until icon clicked) -->
+    <div id="giftModal" aria-hidden="true">
+      <button class="closeBtn" id="closeGiftBtn">✕</button>
+      <img id="giftPhoto" src="photo13.jpg" alt="Gift Photo">
+      <p>Here's some flowers for my cutie from another cutie 🥰</p>
+    </div>
+  </div>
+
+  <!-- audio -->
+  <audio id="bgAudio" src="audio.mp3" loop></audio>
+
+  <!-- 'Tap to enable audio' hint (visible only if autoplay blocked) -->
+  <div id="audioHint">Tap to enable sound</div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-/* Audio Auto-loop */
+/* ================== Settings you can change ================== */
+const COUNTDOWN_SECONDS = 15;        // countdown length
+const CONFETTI_DURATION_MS = 7000;   // how long confetti runs after cut
+/* =========================================================== */
+
+/* DOM refs */
+const countdownWrap = document.getElementById('countdownWrap');
+const countdownEl = document.getElementById('countdown');
+const mainEl = document.querySelector('.main');
+const cakeSection = document.getElementById('cakeSection');
+const cakeImg = document.getElementById('cakeImg');
+const cutBtn = document.getElementById('cutBtn');
 const bgAudio = document.getElementById('bgAudio');
-bgAudio.loop = true;
-bgAudio.volume = 0.7;
-bgAudio.play().catch(()=>{
-  document.body.addEventListener('click',()=>bgAudio.play(),{once:true});
+const playPauseBtn = document.getElementById('playPauseBtn');
+const confettiCanvas = document.getElementById('confetti-canvas');
+
+const giftPopup = document.getElementById('giftPopup');
+const giftIcon = document.getElementById('giftIcon');
+const giftModal = document.getElementById('giftModal');
+const giftPhoto = document.getElementById('giftPhoto');
+const closeGiftBtn = document.getElementById('closeGiftBtn');
+
+const audioHint = document.getElementById('audioHint');
+
+/* ---------- Attempt autoplay on load ---------- */
+bgAudio.volume = 0.78; // default volume
+function tryPlayAudio(){
+  bgAudio.play().then(()=> {
+    // autoplay succeeded
+    audioHint.style.display = 'none';
+    playPauseBtn.textContent = 'Pause';
+  }).catch(()=> {
+    // autoplay blocked — show hint to user to enable
+    audioHint.style.display = 'block';
+    audioHint.onclick = ()=> {
+      bgAudio.play().then(()=> audioHint.style.display='none').catch(()=>{});
+    };
+    // also allow first tap anywhere to play:
+    document.body.addEventListener('click', function oncePlay(){ bgAudio.play().catch(()=>{}); document.body.removeEventListener('click', oncePlay); }, {once:true});
+  });
+}
+tryPlayAudio();
+
+/* Provide play/pause button control */
+let isPlaying = false;
+bgAudio.addEventListener('play', ()=> isPlaying = true);
+bgAudio.addEventListener('pause', ()=> isPlaying = false);
+
+playPauseBtn.addEventListener('click', ()=>{
+  if(bgAudio.paused){
+    bgAudio.play(); playPauseBtn.textContent = 'Pause';
+  } else {
+    bgAudio.pause(); playPauseBtn.textContent = 'Play';
+  }
 });
 
-/* Confetti */
-const confettiCanvas = document.getElementById('confetti-canvas');
-const myConfetti = confetti.create(confettiCanvas,{resize:true,useWorker:true});
-function startConfetti(){
-  const duration = 5 * 1000;
-  const end = Date.now() + duration;
+/* ========== COUNTDOWN logic ========== */
+let remaining = COUNTDOWN_SECONDS;
+countdownEl.textContent = remaining;
+
+const countdownTimer = setInterval(()=>{
+  remaining--;
+  if(remaining >= 0){
+    countdownEl.textContent = remaining;
+  }
+  if(remaining <= 0){
+    clearInterval(countdownTimer);
+    onCountdownEnd();
+  }
+},1000);
+
+function onCountdownEnd(){
+  // hide countdown (fade) and reveal cake area
+  countdownWrap.style.opacity = '0';
+  setTimeout(()=> { countdownWrap.style.display = 'none'; },700);
+
+  // reveal main content (for screenreaders too)
+  mainEl.setAttribute('aria-hidden','false');
+
+  // show cake area
+  cakeSection.style.display = 'flex';
+  // fade-in cake
+  setTimeout(()=> {
+    cakeImg.style.opacity = '1';
+    cakeImg.style.transform = 'scale(1)';
+  },120);
+  // ensure audio is playing (try again)
+  tryPlayAudio();
+}
+
+/* ========== CAKE IMAGE: ensure it loads & fallback ========== */
+cakeImg.addEventListener('error', ()=> {
+  // If cake doesn't load, show a placeholder image from Unsplash so user sees something
+  cakeImg.src = "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop";
+});
+
+/* ========== CONFETTI setup (will only run on cut) ========== */
+const confetti = window.confetti || null;
+let confettiInstance = null;
+if (typeof confetti === 'function') {
+  confettiInstance = confetti.create(confettiCanvas, { resize: true, useWorker: true });
+}
+
+/* Create a strong confetti burst across full screen */
+function launchFullscreenConfetti(durationMs = CONFETTI_DURATION_MS){
+  if(!confettiInstance) return;
+  const end = Date.now() + durationMs;
   (function frame(){
-    myConfetti({particleCount:7,angle:60,spread:55,origin:{x:0}});
-    myConfetti({particleCount:7,angle:120,spread:55,origin:{x:1}});
+    // multiple bursts from center + left/right for full-screen coverage
+    confettiInstance({
+      particleCount: 40,
+      spread: 160,
+      origin: { x: 0.5, y: 0.35 }
+    });
+    confettiInstance({
+      particleCount: 30,
+      spread: 120,
+      origin: { x: 0.2, y: 0.2 }
+    });
+    confettiInstance({
+      particleCount: 30,
+      spread: 120,
+      origin: { x: 0.8, y: 0.2 }
+    });
     if (Date.now() < end) requestAnimationFrame(frame);
   }());
 }
 
-/* Gift Popup */
-const giftPopup = document.getElementById('giftPopup');
-const giftIcon  = document.getElementById('giftIcon');
-const giftPhoto = document.getElementById('giftPhoto');
-const giftMsg2  = document.getElementById('giftMsg2');
-
-function showGiftPopup(){
-  giftPopup.style.display='block';
+/* ========== GIFT POPUP behavior ========== */
+function openGiftPopup(){
+  giftPopup.style.display = 'block';
+  giftModal.style.display = 'none';
+  giftIcon.style.display = 'inline-block';
+  document.body.style.overflow = 'hidden'; // prevent background scroll
 }
-giftIcon.addEventListener('click',()=>{
-  giftPhoto.style.display='block';
-  giftMsg2.style.display='block';
-  giftIcon.style.display='none';
+function revealGiftPhoto(){
+  giftIcon.style.display = 'none';
+  giftModal.style.display = 'block';
+  giftModal.setAttribute('aria-hidden','false');
+}
+function closeGiftModal(){
+  giftModal.style.display = 'none';
+  giftPopup.style.display = 'none';
+  document.body.style.overflow = ''; // restore
+}
+
+/* icon click -> show big photo */
+giftIcon.addEventListener('click', revealGiftPhoto);
+closeGiftBtn.addEventListener('click', closeGiftModal);
+
+/* Make sure clicking outside image closes too (optional) */
+giftPopup.addEventListener('click', (e)=>{
+  if(e.target === giftPopup) { closeGiftModal(); }
 });
 
-/* Cut Cake */
-document.getElementById('cutCakeBtn').addEventListener('click',()=>{
-  startConfetti();
-  setTimeout(showGiftPopup,4000);
+/* ========== CUT CAKE click handler ========== */
+cutBtn.addEventListener('click', ()=>{
+  // Start confetti across full screen
+  launchFullscreenConfetti();
+
+  // show gift popup after a short delay so confetti looks nice
+  setTimeout(openGiftPopup, 1800);
+
+  // optional: small 'cut' animation on cake
+  cakeImg.animate([
+    { transform: 'scale(1)' },
+    { transform: 'scale(0.96)' },
+    { transform: 'scale(1)' }
+  ], { duration: 400, easing: 'ease-in-out' });
 });
+
+/* If user presses ESC while gift open, close */
+document.addEventListener('keydown',(e)=>{ if(e.key === 'Escape') closeGiftModal(); });
+
+/* Accessibility: ensure audio continues loop if ended */
+bgAudio.addEventListener('ended', ()=> { bgAudio.currentTime = 0; bgAudio.play().catch(()=>{}); });
+
+/* Clean-up on unload (optional) */
+window.addEventListener('beforeunload', ()=> {
+  try{ bgAudio.pause(); }catch(e){}
+});
+
 </script>
-
 </body>
 </html>
