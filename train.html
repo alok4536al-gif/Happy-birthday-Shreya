@@ -3,23 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cinematic Wormhole Intro</title>
+<title>Energy Portal Intro</title>
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 html,body{
-  margin:0;padding:0;
-  height:100%;width:100%;
-  overflow:hidden;
+  height:100%;
   background:#000;
+  overflow:hidden;
   font-family:'Segoe UI',sans-serif;
   color:#fff;
   text-align:center;
 }
-#typingBox{
-  position:absolute;
-  top:30%;
-  left:50%;
-  transform:translateX(-50%);
-}
+
+/* Typing lines */
 .line{
   font-size:2.2rem;
   margin:15px 0;
@@ -27,41 +23,71 @@ html,body{
   border-right:2px solid #fff;
   display:inline-block;
 }
+
+/* Energy circle */
+.portal{
+  position:absolute;
+  top:60%;left:50%;
+  width:320px;height:320px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:6px solid rgba(255,180,0,0.9);
+  box-shadow:0 0 40px #ffae00, inset 0 0 40px #ff6a00;
+  opacity:0;
+}
+
+/* Background collage */
+.bg{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:url('photo11.jpg') center/cover no-repeat;
+  opacity:0;
+  filter:brightness(0.4);
+  transition:opacity 12s ease-in-out;
+}
+
+/* Blast effect overlay */
 #fadeOut{
   position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
+  top:0;left:0;width:100%;height:100%;
   background:#000;
   opacity:0;
   pointer-events:none;
   transition:opacity 3s ease-in-out;
 }
-canvas{display:block;}
 </style>
 </head>
 <body>
 
-<div id="typingBox">
+<!-- Typing container -->
+<div id="typingBox" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);">
   <div class="line" id="line1"></div>
   <div class="line" id="line2"></div>
   <div class="line" id="line3"></div>
 </div>
 
+<!-- Energy portal -->
+<div class="portal" id="portal"></div>
+
+<!-- Background collage -->
+<div class="bg" id="bg"></div>
+
+<!-- Fade overlay -->
 <div id="fadeOut"></div>
+
+<!-- Audio -->
 <audio id="introAudio" src="intro.mp3"></audio>
 
-<!-- Three.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script>
-/* ---------- Typing Intro ---------- */
 const lines = [
   "It’s time to",
   "board the train",
   "of memories"
 ];
 const ids = ["line1","line2","line3"];
-let currentLine = 0, charIndex = 0;
+let currentLine = 0;
+let charIndex = 0;
+let spinInterval, angle=0, speed=0.5;
 
 function playAudio(){
   const audio = document.getElementById('introAudio');
@@ -70,6 +96,7 @@ function playAudio(){
   });
 }
 
+// Typewriter effect (multi-line)
 function typeLine(){
   if(currentLine < lines.length){
     const el = document.getElementById(ids[currentLine]);
@@ -79,61 +106,46 @@ function typeLine(){
       setTimeout(typeLine,100);
     }else{
       el.style.borderRight='none';
-      currentLine++; charIndex=0;
+      currentLine++;
+      charIndex=0;
       setTimeout(typeLine,800);
     }
   }else{
-    setTimeout(startTunnel,1500);
+    setTimeout(startPortal,1500);
   }
 }
 typeLine();
 
-/* ---------- Three.js Wormhole ---------- */
-let scene,camera,renderer,mesh,clock;
-function startTunnel(){
+function startPortal(){
   playAudio();
+  // Hide typing text
   document.getElementById('typingBox').style.display='none';
 
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-  renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  const portal=document.getElementById('portal');
+  portal.style.opacity='1';
 
-  const geometry = new THREE.CylinderGeometry(20,20,400,32,1,true);
-  const material = new THREE.MeshBasicMaterial({
-    side:THREE.BackSide,
-    map:new THREE.TextureLoader().load('photo11.jpg')
-  });
-  mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
+  // Start spin with increasing speed
+  spinInterval = setInterval(()=>{
+    angle += speed;
+    speed += 0.1; // accelerate
+    portal.style.transform = `translate(-50%,-50%) rotate(${angle}deg) scale(1)`;
+  },30);
 
-  camera.position.z = 0;
-  camera.rotation.x = Math.PI/2;
+  // Background fade-in
+  setTimeout(()=>{ document.getElementById('bg').style.opacity='1'; },1000);
 
-  clock = new THREE.Clock();
-  animate();
-
-  // fade out and redirect
+  // Blast after ~15s
   setTimeout(()=>{
+    clearInterval(spinInterval);
+    // Huge scale + fade to mimic blast
+    portal.style.transition='transform 1.5s ease-out, opacity 1.5s ease-out';
+    portal.style.transform='translate(-50%,-50%) scale(8)';
+    portal.style.opacity='0';
+    // Black overlay
     document.getElementById('fadeOut').style.opacity='1';
-    setTimeout(()=>window.location.href='memories.html',3000);
-  },20000); // ~20 sec travel
+    setTimeout(()=>{ window.location.href='memories.html'; },3000);
+  },15000);
 }
-
-function animate(){
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-  mesh.position.y = -t*20;    // move texture to simulate travel
-  mesh.rotation.z += 0.001*t; // slight twist
-  renderer.render(scene,camera);
-}
-
-window.addEventListener('resize',()=>{
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
-});
 </script>
 
 </body>
