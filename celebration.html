@@ -25,7 +25,7 @@
   body::before{
     content:"";
     position:absolute;inset:0;
-    background:rgba(0,0,0,0.65); /* dark overlay for contrast */
+    background:rgba(0,0,0,0.65);
     z-index:0;
   }
 
@@ -103,9 +103,6 @@
 
   /* Gift Popup */
   #giftPopup{
-    #giftPopup h3{
-    color:#fff;   /* 👈 text ko pure white kar dega */
-}
     display:none;
     position:fixed;
     top:50%;left:50%;
@@ -117,6 +114,10 @@
     z-index:1500;
     max-width:90vw;
     box-shadow:0 0 30px rgba(0,0,0,.7);
+  }
+  /* ✅ Heading text white */
+  #giftPopup h3{
+    color:#ffffff;
   }
   #giftIcon{
     width:110px;
@@ -266,7 +267,6 @@ cutBtn.addEventListener('click',()=>{
 
 /* Memories button */
 goMemBtn.addEventListener('click',()=>{
-  // little delay with fade-out effect
   document.body.style.transition="opacity 1s";
   document.body.style.opacity="0";
   setTimeout(()=>{ window.location.href="train.html"; },1000);
