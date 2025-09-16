@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cinematic Train Intro</title>
+<title>Energy Portal Intro</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
@@ -24,31 +24,16 @@ html,body{
   display:inline-block;
 }
 
-/* Portal ring */
+/* Energy circle */
 .portal{
   position:absolute;
   top:60%;left:50%;
   width:320px;height:320px;
   transform:translate(-50%,-50%);
   border-radius:50%;
-  border:4px solid rgba(255,180,0,0.8);
+  border:6px solid rgba(255,180,0,0.9);
   box-shadow:0 0 40px #ffae00, inset 0 0 40px #ff6a00;
   opacity:0;
-  animation:spin 8s linear infinite;
-}
-@keyframes spin{
-  0%{transform:translate(-50%,-50%) rotate(0deg);}
-  100%{transform:translate(-50%,-50%) rotate(360deg);}
-}
-
-/* Train with 3-D depth */
-.train{
-  position:absolute;
-  top:60%;left:50%;
-  width:300px;
-  opacity:0;
-  transform:perspective(1000px) translate(-50%,-50%) translateZ(-800px) scale(0.1);
-  transition:transform 15s ease-in-out, opacity 15s ease-in-out;
 }
 
 /* Background collage */
@@ -61,14 +46,14 @@ html,body{
   transition:opacity 12s ease-in-out;
 }
 
-/* Fade overlay */
+/* Blast effect overlay */
 #fadeOut{
   position:fixed;
   top:0;left:0;width:100%;height:100%;
   background:#000;
   opacity:0;
   pointer-events:none;
-  transition:opacity 6s ease-in-out;
+  transition:opacity 3s ease-in-out;
 }
 </style>
 </head>
@@ -81,9 +66,8 @@ html,body{
   <div class="line" id="line3"></div>
 </div>
 
-<!-- Portal + Train -->
+<!-- Energy portal -->
 <div class="portal" id="portal"></div>
-<img src="trainFront.jpg" class="train" id="train" alt="train">
 
 <!-- Background collage -->
 <div class="bg" id="bg"></div>
@@ -91,7 +75,7 @@ html,body{
 <!-- Fade overlay -->
 <div id="fadeOut"></div>
 
-<!-- Dummy audio -->
+<!-- Audio -->
 <audio id="introAudio" src="intro.mp3"></audio>
 
 <script>
@@ -103,6 +87,7 @@ const lines = [
 const ids = ["line1","line2","line3"];
 let currentLine = 0;
 let charIndex = 0;
+let spinInterval, angle=0, speed=0.5;
 
 function playAudio(){
   const audio = document.getElementById('introAudio');
@@ -111,6 +96,7 @@ function playAudio(){
   });
 }
 
+// Typewriter effect (multi-line)
 function typeLine(){
   if(currentLine < lines.length){
     const el = document.getElementById(ids[currentLine]);
@@ -119,7 +105,6 @@ function typeLine(){
       charIndex++;
       setTimeout(typeLine,100);
     }else{
-      // line done
       el.style.borderRight='none';
       currentLine++;
       charIndex=0;
@@ -133,21 +118,33 @@ typeLine();
 
 function startPortal(){
   playAudio();
-  document.getElementById('portal').style.opacity='1';
+  // Hide typing text
+  document.getElementById('typingBox').style.display='none';
 
+  const portal=document.getElementById('portal');
+  portal.style.opacity='1';
+
+  // Start spin with increasing speed
+  spinInterval = setInterval(()=>{
+    angle += speed;
+    speed += 0.1; // accelerate
+    portal.style.transform = `translate(-50%,-50%) rotate(${angle}deg) scale(1)`;
+  },30);
+
+  // Background fade-in
+  setTimeout(()=>{ document.getElementById('bg').style.opacity='1'; },1000);
+
+  // Blast after ~15s
   setTimeout(()=>{
-    const train=document.getElementById('train');
-    train.style.opacity='1';
-    train.style.transform=
-      'perspective(1000px) translate(-50%,-50%) translateZ(300px) scale(1.4)';
-    const bg=document.getElementById('bg');
-    bg.style.opacity='1';
-
-    setTimeout(()=>{
-      document.getElementById('fadeOut').style.opacity='1';
-      setTimeout(()=>{ window.location.href='memories.html'; },6000);
-    },12000);
-  },2000);
+    clearInterval(spinInterval);
+    // Huge scale + fade to mimic blast
+    portal.style.transition='transform 1.5s ease-out, opacity 1.5s ease-out';
+    portal.style.transform='translate(-50%,-50%) scale(8)';
+    portal.style.opacity='0';
+    // Black overlay
+    document.getElementById('fadeOut').style.opacity='1';
+    setTimeout(()=>{ window.location.href='memories.html'; },3000);
+  },15000);
 }
 </script>
 
