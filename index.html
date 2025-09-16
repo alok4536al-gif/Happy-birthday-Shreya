@@ -8,12 +8,30 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{
-    background: radial-gradient(circle at top left,#000 0%,#111 50%,#000 100%);
+    /* 🔥 Background Image Added */
+    background: url("photo15.jpg") center/cover no-repeat fixed;
     font-family:'Poppins',sans-serif;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    height:100vh;text-align:center;color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    text-align:center;
+    color:#fff;
+    position:relative;
   }
+  /* Dark overlay for text readability */
+  body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    z-index:0;
+  }
+
   h1{
+    position:relative;
+    z-index:1;
     font-size: clamp(40px,8vw,120px);
     font-weight:900;
     text-transform:uppercase;
@@ -22,11 +40,20 @@
     margin-bottom:20px;
   }
   p{
+    position:relative;
+    z-index:1;
     font-size:clamp(16px,2vw,24px);
     color:#ddd;
     margin-bottom:40px;
   }
-  .btns{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+  .btns{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+  }
   a{
     display:inline-block;
     padding:18px 36px;
@@ -39,7 +66,10 @@
     transition:transform .2s, box-shadow .2s;
     box-shadow:0 8px 25px rgba(255,79,163,.4);
   }
-  a:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(255,79,163,.6);}
+  a:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 35px rgba(255,79,163,.6);
+  }
 </style>
 </head>
 <body>
