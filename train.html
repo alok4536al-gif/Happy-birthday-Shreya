@@ -5,42 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinematic Train Intro</title>
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 html,body{
-  margin:0;padding:0;height:100%;
+  height:100%;
   background:#000;
   overflow:hidden;
   font-family:'Segoe UI',sans-serif;
   color:#fff;
-}
-/* Typing text */
-#introText{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  font-size:2rem;
-  white-space:nowrap;
-  border-right:2px solid #fff;
-  padding:0 10px;
+  text-align:center;
 }
 
-/* Portal + train */
+/* Typing lines */
+.line{
+  font-size:2.2rem;
+  margin:15px 0;
+  white-space:nowrap;
+  border-right:2px solid #fff;
+  display:inline-block;
+}
+
+/* Portal ring */
 .portal{
   position:absolute;
-  top:50%;left:50%;
+  top:60%;left:50%;
   width:320px;height:320px;
   transform:translate(-50%,-50%);
   border-radius:50%;
   border:4px solid rgba(255,180,0,0.8);
   box-shadow:0 0 40px #ffae00, inset 0 0 40px #ff6a00;
   opacity:0;
+  animation:spin 8s linear infinite;
 }
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
+
+/* Train with 3-D depth */
 .train{
   position:absolute;
-  top:50%;left:50%;
-  width:260px;
-  transform:translate(-50%,-50%) scale(0.3);
+  top:60%;left:50%;
+  width:300px;
   opacity:0;
-  transition:all 10s ease-in-out;
+  transform:perspective(1000px) translate(-50%,-50%) translateZ(-800px) scale(0.1);
+  transition:transform 15s ease-in-out, opacity 15s ease-in-out;
 }
 
 /* Background collage */
@@ -50,10 +58,10 @@ html,body{
   background:url('photo11.jpg') center/cover no-repeat;
   opacity:0;
   filter:brightness(0.4);
-  transition:opacity 10s ease-in-out;
+  transition:opacity 12s ease-in-out;
 }
 
-/* Final black overlay */
+/* Fade overlay */
 #fadeOut{
   position:fixed;
   top:0;left:0;width:100%;height:100%;
@@ -66,49 +74,79 @@ html,body{
 </head>
 <body>
 
-<div id="introText"></div>
+<!-- Typing container -->
+<div id="typingBox" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);">
+  <div class="line" id="line1"></div>
+  <div class="line" id="line2"></div>
+  <div class="line" id="line3"></div>
+</div>
+
+<!-- Portal + Train -->
 <div class="portal" id="portal"></div>
-<img src="train.jpg" class="train" id="train">
+<img src="trainFront.jpg" class="train" id="train" alt="train">
+
+<!-- Background collage -->
 <div class="bg" id="bg"></div>
+
+<!-- Fade overlay -->
 <div id="fadeOut"></div>
 
-<script>
-const text = "It's time to board the train of memories";
-const intro = document.getElementById('introText');
-let i = 0;
+<!-- Dummy audio -->
+<audio id="introAudio" src="intro.mp3"></audio>
 
-// Typewriter effect
-function typeText(){
-  if(i < text.length){
-    intro.textContent += text.charAt(i);
-    i++;
-    setTimeout(typeText,100); // typing speed
+<script>
+const lines = [
+  "It’s time to",
+  "board the train",
+  "of memories"
+];
+const ids = ["line1","line2","line3"];
+let currentLine = 0;
+let charIndex = 0;
+
+function playAudio(){
+  const audio = document.getElementById('introAudio');
+  audio.play().catch(()=>{
+    document.body.addEventListener('click',()=>audio.play(),{once:true});
+  });
+}
+
+function typeLine(){
+  if(currentLine < lines.length){
+    const el = document.getElementById(ids[currentLine]);
+    if(charIndex < lines[currentLine].length){
+      el.textContent += lines[currentLine].charAt(charIndex);
+      charIndex++;
+      setTimeout(typeLine,100);
+    }else{
+      // line done
+      el.style.borderRight='none';
+      currentLine++;
+      charIndex=0;
+      setTimeout(typeLine,800);
+    }
   }else{
-    setTimeout(startPortal,1000); // wait then portal
+    setTimeout(startPortal,1500);
   }
 }
-typeText();
+typeLine();
 
 function startPortal(){
-  // hide typing cursor
-  intro.style.borderRight='none';
-  // show portal
-  const portal=document.getElementById('portal');
-  portal.style.opacity='1';
-  // start train after small delay
+  playAudio();
+  document.getElementById('portal').style.opacity='1';
+
   setTimeout(()=>{
     const train=document.getElementById('train');
     train.style.opacity='1';
-    train.style.transform='translate(-50%,-50%) scale(1.3)';
-    // start background fade
+    train.style.transform=
+      'perspective(1000px) translate(-50%,-50%) translateZ(300px) scale(1.4)';
     const bg=document.getElementById('bg');
     bg.style.opacity='1';
-    // fade to black after travel
+
     setTimeout(()=>{
       document.getElementById('fadeOut').style.opacity='1';
-      // redirect after fade
       setTimeout(()=>{ window.location.href='memories.html'; },6000);
-    },10000); // background display time
+    },12000);
   },2000);
 }
 </script>
