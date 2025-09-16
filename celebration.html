@@ -9,16 +9,32 @@
   :root{
     --accent:#ff4fa3;
     --gold:#ffb199;
-    --bg:#000;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;background:var(--bg);color:#fff;font-family:"Poppins",system-ui,Arial;overflow-x:hidden}
+  html,body{
+    height:100%;
+    font-family:"Poppins",sans-serif;
+    overflow-x:hidden;
+  }
+
+  /* Background Image */
+  body{
+    background:url("photo14.jpg") center/cover no-repeat fixed;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:absolute;inset:0;
+    background:rgba(0,0,0,0.65); /* dark overlay for contrast */
+    z-index:0;
+  }
 
   /* COUNTDOWN */
   #countdownWrap{
     position:fixed;inset:0;
     display:flex;align-items:center;justify-content:center;
-    background:#000;z-index:50;
+    background:#000;
+    z-index:50;
     transition:opacity .6s ease;
   }
   #countdown{
@@ -31,6 +47,8 @@
 
   /* MAIN CONTENT */
   .main{
+    position:relative;
+    z-index:1;
     min-height:100vh;
     padding:28px;
     display:flex;
@@ -41,7 +59,7 @@
 
   h1{
     margin-top:20px;
-    font-size:clamp(36px,6vw,64px); /* BIGGER */
+    font-size:clamp(42px,7vw,72px);
     color:var(--accent);
     text-shadow:0 0 25px rgba(255,79,163,.35),0 0 80px rgba(255,79,163,.25);
   }
@@ -125,10 +143,10 @@
     text-decoration:none;
     padding:12px 24px;
     border-radius:999px;
-    background:rgba(255,255,255,.08);
+    background:rgba(255,255,255,.1);
     color:#fff;
     font-weight:700;
-    border:1px solid rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.2);
   }
 </style>
 </head>
@@ -148,7 +166,7 @@
     <button id="cutBtn" class="btn">🎂 Cut the Cake</button>
 
     <div class="memoriesWrap">
-      <a href="train.html" class="memBtn">Go to Memories</a>
+      <button id="goMemBtn" class="btn">✨ Go to Memories ✨</button>
     </div>
   </div>
 </div>
@@ -173,14 +191,13 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
 const COUNTDOWN_TIME = 15;
-const CONFETTI_DURATION = 7000;
-
 const countdownWrap = document.getElementById('countdownWrap');
 const countdownEl = document.getElementById('countdown');
 const mainEl = document.querySelector('.main');
 const cakeSection = document.getElementById('cakeSection');
 const cakeImg = document.getElementById('cakeImg');
 const cutBtn = document.getElementById('cutBtn');
+const goMemBtn = document.getElementById('goMemBtn');
 const bgAudio = document.getElementById('bgAudio');
 
 const giftPopup = document.getElementById('giftPopup');
@@ -211,23 +228,23 @@ function finishCountdown(){
 
   // start audio only AFTER countdown
   bgAudio.play().catch(()=>{
-    // fallback if browser blocks
     document.body.addEventListener('click',()=>bgAudio.play(),{once:true});
   });
 }
 
-/* Confetti across full screen */
+/* single burst confetti */
 const confetti = window.confetti.create(document.getElementById('confetti-canvas'),{resize:true,useWorker:true});
-function launchConfetti(){
-  const end = Date.now() + CONFETTI_DURATION;
-  (function frame(){
-    confetti({
-      particleCount: 50,
-      spread: 360,
-      origin: { x: Math.random(), y: Math.random()-0.2 }
-    });
-    if(Date.now() < end) requestAnimationFrame(frame);
-  }());
+function singleConfetti(){
+  for(let i=0;i<7;i++){
+    setTimeout(()=>{
+      confetti({
+        particleCount:150,
+        spread:360,
+        startVelocity:55,
+        origin:{x:0.5,y:0.5}
+      });
+    }, i*250);
+  }
 }
 
 /* Gift popup */
@@ -240,8 +257,16 @@ closeGiftBtn.addEventListener('click',closeGift);
 
 /* Cake cut */
 cutBtn.addEventListener('click',()=>{
-  launchConfetti();
+  singleConfetti();
   setTimeout(openGift,2000);
+});
+
+/* Memories button */
+goMemBtn.addEventListener('click',()=>{
+  // little delay with fade-out effect
+  document.body.style.transition="opacity 1s";
+  document.body.style.opacity="0";
+  setTimeout(()=>{ window.location.href="train.html"; },1000);
 });
 </script>
 </body>
