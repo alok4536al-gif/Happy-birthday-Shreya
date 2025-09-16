@@ -1,111 +1,109 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Time Train</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Time Train</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    background:linear-gradient(#000010,#000);
-    overflow:hidden;
-    font-family:'Poppins',sans-serif;
-    color:#fff;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    position:relative;
-  }
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',sans-serif;}
 
-  /* Moving clouds/stars background */
-  .sky{
-    position:absolute;
-    top:0;left:0;width:200%;height:100%;
-    background:
-      url('https://i.ibb.co/98PrxX8/stars.png') repeat,
-      radial-gradient(#000015,#000);
-    background-size:contain;
-    animation:skyMove 40s linear infinite;
-    z-index:0;
-  }
-  @keyframes skyMove{
-    0%{transform:translateX(0);}
-    100%{transform:translateX(-50%);}
-  }
+/* Background collage */
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:url('photo11.jpg') center/cover no-repeat;
+  filter:brightness(0.4);
+  animation:bgZoom 15s ease-in-out infinite alternate;
+}
+@keyframes bgZoom{
+  0%{transform:scale(1);}
+  100%{transform:scale(1.1);}
+}
 
-  h1{
-    z-index:1;
-    font-size:clamp(28px,6vw,60px);
-    font-weight:900;
-    text-shadow:0 0 30px #00f6ff;
-    margin-bottom:40px;
-    text-align:center;
-  }
+/* Portal ring */
+.portal{
+  position:absolute;
+  top:50%;left:50%;
+  width:320px;height:320px;
+  transform:translate(-50%,-50%);
+  border:4px solid rgba(255,140,0,0.8);
+  border-radius:50%;
+  box-shadow:0 0 40px #ffae00, inset 0 0 40px #ff6a00;
+  animation:spin 6s linear infinite;
+}
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
 
-  .train-track{
-    position:absolute;
-    bottom:40px;
-    width:100%;
-    height:120px;
-    overflow:hidden;
-  }
-  .train{
-    position:absolute;
-    left:-400px;
-    bottom:0;
-    width:350px;
-    font-size:80px;
-    text-align:center;
-    white-space:nowrap;
-  }
-  /* Train moves when boarded */
-  .moveTrain{animation:trainMove 6s linear forwards;}
-  @keyframes trainMove{
-    0%{left:-400px;}
-    100%{left:calc(100% + 400px);}
-  }
+/* Particle sparks */
+.spark{
+  position:absolute;
+  top:50%;left:50%;
+  width:6px;height:6px;
+  background:#ffa500;
+  border-radius:50%;
+  animation:sparkMove 3s linear infinite;
+}
+@keyframes sparkMove{
+  0%{transform:translate(-50%,-50%) rotate(0deg) translateX(150px);}
+  100%{transform:translate(-50%,-50%) rotate(360deg) translateX(150px);}
+}
 
-  .boardBtn{
-    z-index:1;
-    padding:16px 40px;
-    background:linear-gradient(135deg,#00f6ff,#4e9eff);
-    color:#000;
-    font-weight:700;
-    border:none;
-    border-radius:40px;
-    font-size:20px;
-    cursor:pointer;
-    transition:transform .2s, box-shadow .2s;
-    box-shadow:0 8px 25px rgba(0,246,255,.4);
-  }
-  .boardBtn:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(0,246,255,.6);}
+/* Train image */
+.train{
+  position:absolute;
+  top:calc(50% - 60px);
+  left:50%;
+  width:260px;
+  opacity:0;
+  transform:translate(-50%,80px) scale(0.2);
+  animation:trainMove 6s ease-in-out forwards;
+}
+@keyframes trainMove{
+  0%{opacity:0; transform:translate(-50%,80px) scale(0.2);}
+  20%{opacity:1; transform:translate(-50%,20px) scale(0.6);}
+  60%{opacity:1; transform:translate(-50%,-20px) scale(1);}
+  100%{opacity:0; transform:translate(-50%,-200px) scale(1.4);}
+}
+
+/* Title */
+.title{
+  position:absolute;
+  top:12%;
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:2.5rem;
+  letter-spacing:3px;
+  text-shadow:0 0 25px #ffa500,0 0 40px #ff4500;
+  animation:titleGlow 4s ease-in-out infinite alternate;
+}
+@keyframes titleGlow{
+  0%{text-shadow:0 0 20px #ffa500;}
+  100%{text-shadow:0 0 40px #ff4500;}
+}
 </style>
 </head>
 <body>
 
-<div class="sky"></div>
+<div class="title">Board the Time Train 🚂</div>
 
-<h1>Board the Time Train<br>to Our Memories 🚂</h1>
-<button class="boardBtn" id="board">Click to Board</button>
+<div class="portal"></div>
+<!-- sparks -->
+<div class="spark" style="animation-delay:0s"></div>
+<div class="spark" style="animation-delay:1s"></div>
+<div class="spark" style="animation-delay:2s"></div>
 
-<div class="train-track">
-  <div class="train" id="train">
-    🚂💨💨
-  </div>
-</div>
+<!-- Train image -->
+<img src="train.jpg" class="train" alt="train">
 
 <script>
-const boardBtn=document.getElementById('board');
-const train=document.getElementById('train');
-boardBtn.onclick=()=>{
-  boardBtn.style.display="none";
-  train.classList.add('moveTrain');
-  setTimeout(()=>{ window.location.href="memories.html"; },6000); // 6 sec ride
-};
+setTimeout(()=>{
+  window.location.href='memories.html';
+},6000); // redirect after 6 sec
 </script>
-
 </body>
 </html>
