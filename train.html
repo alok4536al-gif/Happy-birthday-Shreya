@@ -3,107 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Time Train</title>
+<title>Cinematic Train Intro</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',sans-serif;}
-
-/* Background collage */
-body::before{
-  content:"";
-  position:fixed;
-  top:0;left:0;width:100%;height:100%;
-  background:url('photo11.jpg') center/cover no-repeat;
-  filter:brightness(0.4);
-  animation:bgZoom 15s ease-in-out infinite alternate;
+html,body{
+  margin:0;padding:0;height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:'Segoe UI',sans-serif;
+  color:#fff;
 }
-@keyframes bgZoom{
-  0%{transform:scale(1);}
-  100%{transform:scale(1.1);}
+/* Typing text */
+#introText{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:2rem;
+  white-space:nowrap;
+  border-right:2px solid #fff;
+  padding:0 10px;
 }
 
-/* Portal ring */
+/* Portal + train */
 .portal{
   position:absolute;
   top:50%;left:50%;
   width:320px;height:320px;
   transform:translate(-50%,-50%);
-  border:4px solid rgba(255,140,0,0.8);
   border-radius:50%;
+  border:4px solid rgba(255,180,0,0.8);
   box-shadow:0 0 40px #ffae00, inset 0 0 40px #ff6a00;
-  animation:spin 6s linear infinite;
+  opacity:0;
 }
-@keyframes spin{
-  0%{transform:translate(-50%,-50%) rotate(0deg);}
-  100%{transform:translate(-50%,-50%) rotate(360deg);}
-}
-
-/* Particle sparks */
-.spark{
-  position:absolute;
-  top:50%;left:50%;
-  width:6px;height:6px;
-  background:#ffa500;
-  border-radius:50%;
-  animation:sparkMove 3s linear infinite;
-}
-@keyframes sparkMove{
-  0%{transform:translate(-50%,-50%) rotate(0deg) translateX(150px);}
-  100%{transform:translate(-50%,-50%) rotate(360deg) translateX(150px);}
-}
-
-/* Train image */
 .train{
   position:absolute;
-  top:calc(50% - 60px);
-  left:50%;
+  top:50%;left:50%;
   width:260px;
+  transform:translate(-50%,-50%) scale(0.3);
   opacity:0;
-  transform:translate(-50%,80px) scale(0.2);
-  animation:trainMove 6s ease-in-out forwards;
-}
-@keyframes trainMove{
-  0%{opacity:0; transform:translate(-50%,80px) scale(0.2);}
-  20%{opacity:1; transform:translate(-50%,20px) scale(0.6);}
-  60%{opacity:1; transform:translate(-50%,-20px) scale(1);}
-  100%{opacity:0; transform:translate(-50%,-200px) scale(1.4);}
+  transition:all 10s ease-in-out;
 }
 
-/* Title */
-.title{
-  position:absolute;
-  top:12%;
-  width:100%;
-  text-align:center;
-  color:#fff;
-  font-size:2.5rem;
-  letter-spacing:3px;
-  text-shadow:0 0 25px #ffa500,0 0 40px #ff4500;
-  animation:titleGlow 4s ease-in-out infinite alternate;
+/* Background collage */
+.bg{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:url('photo11.jpg') center/cover no-repeat;
+  opacity:0;
+  filter:brightness(0.4);
+  transition:opacity 10s ease-in-out;
 }
-@keyframes titleGlow{
-  0%{text-shadow:0 0 20px #ffa500;}
-  100%{text-shadow:0 0 40px #ff4500;}
+
+/* Final black overlay */
+#fadeOut{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 6s ease-in-out;
 }
 </style>
 </head>
 <body>
 
-<div class="title">Board the Time Train 🚂</div>
-
-<div class="portal"></div>
-<!-- sparks -->
-<div class="spark" style="animation-delay:0s"></div>
-<div class="spark" style="animation-delay:1s"></div>
-<div class="spark" style="animation-delay:2s"></div>
-
-<!-- Train image -->
-<img src="train.jpg" class="train" alt="train">
+<div id="introText"></div>
+<div class="portal" id="portal"></div>
+<img src="train.jpg" class="train" id="train">
+<div class="bg" id="bg"></div>
+<div id="fadeOut"></div>
 
 <script>
-setTimeout(()=>{
-  window.location.href='memories.html';
-},6000); // redirect after 6 sec
+const text = "It's time to board the train of memories";
+const intro = document.getElementById('introText');
+let i = 0;
+
+// Typewriter effect
+function typeText(){
+  if(i < text.length){
+    intro.textContent += text.charAt(i);
+    i++;
+    setTimeout(typeText,100); // typing speed
+  }else{
+    setTimeout(startPortal,1000); // wait then portal
+  }
+}
+typeText();
+
+function startPortal(){
+  // hide typing cursor
+  intro.style.borderRight='none';
+  // show portal
+  const portal=document.getElementById('portal');
+  portal.style.opacity='1';
+  // start train after small delay
+  setTimeout(()=>{
+    const train=document.getElementById('train');
+    train.style.opacity='1';
+    train.style.transform='translate(-50%,-50%) scale(1.3)';
+    // start background fade
+    const bg=document.getElementById('bg');
+    bg.style.opacity='1';
+    // fade to black after travel
+    setTimeout(()=>{
+      document.getElementById('fadeOut').style.opacity='1';
+      // redirect after fade
+      setTimeout(()=>{ window.location.href='memories.html'; },6000);
+    },10000); // background display time
+  },2000);
+}
 </script>
+
 </body>
 </html>
