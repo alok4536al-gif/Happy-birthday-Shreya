@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Happy Birthday Shreya</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+<!-- ====== PRELOAD Celebration & Train Assets ====== -->
+<link rel="preload" as="image" href="cake.png.png">
+<link rel="preload" as="image" href="photo14.jpg">
+<link rel="preload" as="audio" href="audio.mp3">
+<link rel="preload" as="image" href="photo11.jpg">
+<link rel="preload" as="image" href="train-front.png">
+<link rel="preload" as="audio" href="trainSound.mp3">
+
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
 
@@ -42,6 +51,9 @@
     50%{transform:translateY(-10px);}
   }
 
+  /* ===== Hidden Preload (extra cache guarantee) ===== */
+  .hidden-preload{display:none !important;}
+
   /* ===== Main Page ===== */
   body{
     background: radial-gradient(circle at top left,#000 0%,#111 50%,#000 100%);
@@ -53,7 +65,7 @@
     font-size: clamp(40px,8vw,120px);
     font-weight:900;
     text-transform:uppercase;
-    color:#ffe066;  /* 🌟 brighter yellow-gold for visibility */
+    color:#ffe066;  /* 🌟 brighter yellow-gold */
     text-shadow:0 0 25px #ffe066, 0 0 45px #ffcc33;
     margin-bottom:20px;
   }
@@ -87,6 +99,17 @@
       Your pengu is making things ready
     </div>
   </div>
+
+  <!-- ===== HIDDEN PRELOAD TAGS (forces cache) ===== -->
+  <div class="hidden-preload">
+     <img src="cake.png" alt="">
+     <img src="photo14.jpg" alt="">
+     <img src="photo11.jpg" alt="">
+     <img src="train-front.png" alt="">
+     <audio src="audio.mp3" preload="auto"></audio>
+     <audio src="trainSound.mp3" preload="auto"></audio>
+  </div>
+
   <!-- ===== MAIN CONTENT ===== -->
   <h1>Happy Birthday Shreya ❤️</h1>
   <p></p>
