@@ -7,53 +7,62 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    /* 🔥 Background Image Added */
-    background: url("photo16.jpg") center/cover no-repeat fixed;
-    font-family:'Poppins',sans-serif;
+
+  /* ===== Preloader ===== */
+  #preloader{
+    position:fixed;
+    top:0;left:0;width:100%;height:100%;
+    background:#000;
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
-    height:100vh;
     text-align:center;
-    color:#fff;
-    position:relative;
+    flex-direction:column;
+    z-index:9999;
   }
-  /* Dark overlay for text readability */
-  body::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,0.55);
-    z-index:0;
+  .loaderPenguin{
+    font-size:90px;      /* BIG penguin emoji */
+    margin-bottom:20px;
+    animation:bounce 1.8s infinite;
+  }
+  .loaderText{
+    color:#ff4fa3;
+    font-size:1.6rem;
+    line-height:1.8;
+    font-weight:600;
+    animation:pulse 1.5s infinite;
+  }
+  @keyframes pulse{
+    0%{opacity:.4;}
+    50%{opacity:1;}
+    100%{opacity:.4;}
+  }
+  @keyframes bounce{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
   }
 
+  /* ===== Main Page ===== */
+  body{
+    background: radial-gradient(circle at top left,#000 0%,#111 50%,#000 100%);
+    font-family:'Poppins',sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:100vh;text-align:center;color:#fff;
+  }
   h1{
-    position:relative;
-    z-index:1;
     font-size: clamp(40px,8vw,120px);
     font-weight:900;
     text-transform:uppercase;
-    color:#ff4fa3;
-    text-shadow:0 0 25px #ff4fa3, 0 0 45px #ff4fa3;
+    color:#ffe066;  /* 🌟 brighter yellow-gold for visibility */
+    text-shadow:0 0 25px #ffe066, 0 0 45px #ffcc33;
     margin-bottom:20px;
   }
   p{
-    position:relative;
-    z-index:1;
     font-size:clamp(16px,2vw,24px);
     color:#ddd;
     margin-bottom:40px;
   }
-  .btns{
-    position:relative;
-    z-index:1;
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
-    justify-content:center;
-  }
+  .btns{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
   a{
     display:inline-block;
     padding:18px 36px;
@@ -66,13 +75,19 @@
     transition:transform .2s, box-shadow .2s;
     box-shadow:0 8px 25px rgba(255,79,163,.4);
   }
-  a:hover{
-    transform:translateY(-4px);
-    box-shadow:0 12px 35px rgba(255,79,163,.6);
-  }
+  a:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(255,79,163,.6);}
 </style>
 </head>
 <body>
+  <!-- ===== PRELOADER ===== -->
+  <div id="preloader">
+    <div class="loaderPenguin">🐧</div>
+    <div class="loaderText">
+      Shreya ji chai peelo ☕<br>
+      Your pengu is making things ready
+    </div>
+  </div>
+  <!-- ===== MAIN CONTENT ===== -->
   <h1>Happy Birthday Shreya ❤️</h1>
   <p></p>
   <div class="btns">
@@ -81,5 +96,12 @@
     <a href="friends.html">Friend Wishes 💌</a>
     <a href="journey.html">Our Journey 🕰️</a>
   </div>
+
+  <!-- ===== JS to hide preloader when all assets loaded ===== -->
+  <script>
+    window.addEventListener('load', function(){
+       document.getElementById('preloader').style.display = 'none';
+    });
+  </script>
 </body>
 </html>
