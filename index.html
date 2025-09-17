@@ -118,10 +118,12 @@
     <a href="journey.html">Our Journey 🕰️</a>
   </div>
 
-  <!-- ===== JS to hide preloader when all assets loaded ===== -->
+  <!-- ===== JS to hide preloader with 5 sec minimum delay ===== -->
   <script>
     window.addEventListener('load', function(){
-       document.getElementById('preloader').style.display = 'none';
+       setTimeout(function(){
+          document.getElementById('preloader').style.display = 'none';
+       }, 5000);  // 5 seconds minimum
     });
   </script>
 </body>
